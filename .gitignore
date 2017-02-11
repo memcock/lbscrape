@@ -1,5 +1,4 @@
 creds
-config.yaml
 __pycache__
 .venv
 *.db

@@ -1,0 +1,17 @@
+meta:
+    app: lbscrape
+    version: alpha
+
+reddit:
+    id: false
+    secret: false
+    user_agent: linux:lbscrape:alpha (by /u/anonfreak42)
+    # <platform>:<app ID>:<version string>
+
+database:
+    driver: postgresql://
+    user: false
+    password: false
+    path: postgres/lbscrape
+
+broker: redis://redis:6379/0
