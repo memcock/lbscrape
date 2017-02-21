@@ -5,6 +5,7 @@ from sqlalchemy import inspect
 from sqlalchemy.ext.declarative.clsregistry import _ModuleMarker
 from sqlalchemy.orm import RelationshipProperty
 import json
+import requests
 
 def is_sane_database(Base, session):
     """Check whether the current database matches the models declared in model base.
@@ -166,4 +167,14 @@ def log_submission(dir, submission):
 
 	with open(dir + '/%s.json'%submission.fullname, 'w') as f:
 		json.dump(data, f)
+
+# Check if a url is valid
+def check_url(url):
+	try:
+		response = requests.head(url)
+		if response.status_code == 200:
+			return True
+	except:
+		pass
+	return False
 

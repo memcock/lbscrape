@@ -1,6 +1,6 @@
 from praw import Reddit
 from prawcore.exceptions import Forbidden, NotFound, Redirect
-
+import requests
 from config import config, getLogger
 import lib.utils as utils
 

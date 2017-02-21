@@ -2,7 +2,7 @@ import app
 import lib.reddit as reddit
 import lib.query as query
 from celery import subtask, group, signature, chord
-from lib.utils import submission_to_dict, collapse_double_list, utc_time
+from lib.utils import submission_to_dict, collapse_double_list, utc_time, check_url
 import lib.database as database
 
 def create_scrape_job(subreddit, wanted, job_id):
@@ -12,13 +12,13 @@ def create_scrape_job(subreddit, wanted, job_id):
 				check_progress.s(subreddit, job_id, wanted)))
 	return task
 		
-
 def find_images(subreddit, wanted, exclude = []):
 	job = database.create_job()
 	images = database.get_images(subreddit, wanted, exclude)
-	database.add_results_to_job(job, images)
-	if len(images) < wanted:
-		needed = wanted - len(images)
+	checked = [x for x in images if check_url(x.url)]
+	database.add_results_to_job(job, checked)
+	if len(checked) < wanted:
+		needed = wanted - len(checked)
 		create_scrape_job(subreddit, needed, job.id)()
 	else:
 		job.complete = True
@@ -54,8 +54,9 @@ def to_chord(it, group_task, callback):
 def check_progress(results, subreddit, job_id, wanted):
 	print(results)
 	results = collapse_double_list(results)
-	print(results)
-	images = [database.create_image(**result) for result in results]
+	checked = [x for x in results if check_url(x['url'])]
+	print(checked)
+	images = [database.create_image(**result) for result in checked]
 	images = [x for x in images if x]
 	database.add_results_to_job(job_id, images[:wanted])
 	print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
