@@ -160,7 +160,7 @@ def loadFromEnv(config, namespace = []):
 	newConfig = config.copy()
 	for key, value in config.items():
 		if not isinstance(value, dict):
-			configVar = '.'.join(namespace + [key.upper()])
+			configVar = '_'.join(namespace + [key.upper()])
 			print('checking %s'%configVar)
 			env = os.getenv(configVar, None)
 			if env:

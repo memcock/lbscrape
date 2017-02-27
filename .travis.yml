@@ -4,6 +4,7 @@ services:
 - docker
 script:
 - docker build -t "$DOCKER_USER/lbscrape" .
+- docker tag "$DOCKER_USER/lbscrape:latest" "$DOCKER_USER/memcock:$(echo $TRAVIS_COMMIT | cut -c-10)"
 - docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
 - docker push "$DOCKER_USER/lbscrape"
 env:
