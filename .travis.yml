@@ -2,12 +2,23 @@ sudo: required
 language: python
 services:
 - docker
-script:
-- docker build -t "$DOCKER_USER/lbscrape" .
-- docker tag "$DOCKER_USER/lbscrape:latest" "$DOCKER_USER/lbscrape:$(echo $TRAVIS_COMMIT | cut -c-10)"
-- docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-- docker push "$DOCKER_USER/lbscrape"
 env:
   global:
   - secure: nnJ19UBuWFLvR03eN56N2HlvxS+ONzbqxstvOA2/8OosATha9RhNmEB1TakFSakguwyHyUGxX227lQYIl9Ffh82GRDvwGtytNg5+VZ5xUysCRODZo3g5o2QXi+wj1cYpQy0XrqWU7e6okFVkTJrwVR5P075Vf7m1T/PsRE3Too6RnXrTU62L+zWBJ0sMqa/yQwXc3p135v+xluxGBkROEXxntx9Ld0GK7Yw1AyM9r6jPfJ48NX2VcmzSPjfuC2yDsHOkkKbTXcVa5Av8RvxSO4JShK3GHaV1Q89bzkltj8akHVzT4U5RIyxnvNpmK6Fxw1gneykXGD8KON3LC8S2QrmZcIhRoEXQE1XBv7rxnHZlNZAnA86KWYYiEwvkN6XaPnZvaTmr0dEzIb6Lfv4EZKqMkCCgVgUgXnBcgxZ5H2m01U2pn9FsNLBPIIYHWKL9SWnPktxsZjbVuiaianVbcLZ3P3sY/9LI1/w7uo62/BLMAk6kZySgOoUP6HdgYSODjTwrM+eFoVkga8A4nLzmtflf4lS4viJPfSOTYXF9vNOLTPjbqvUEODRnk96ApFjwTWSaUBDsPO8I/S3EYTfxw0j+jyhXepfGlcSUIf97k8+DYSG5UxJ5PUDCpmjATbYGXL8nuz+9hHPEZFtDml5NHAJOZ3KE0f9C6/R8lxGsqGs=
   - secure: nEWwB2q5a30aKaEUz4j0o7+tmp2WI0Nt+s2AzDQRfD18zwn9Lb3na185K3vA8xzPSsOErVKmM04tG9wsAgeHy5IsXYeLl3BQH06j5XRPYWrOZbA28JoP1/9VkAuz2xd4EP19/ROWz/19j20gUC7feDY9PEQi7wPQzyyWHE9X4dxsVcYR8BA875QJBcHb3lP7WPoWXOVdWtDLpTfxG9bWBMd61BQZaYnH2fHavEY24LXpee890CP/dabZx+bw4Cp41cJP3iom8ZdVcdLNDfnZ1UzhkIFKKBLgBRSic3me9cRjYE+NZ3jVQntoszAWq35x/o5lZtEInnbg5fvkPFk8AcGMfeI2UPnsVCTe5QUlGHniipib1n7PWnrmfuKWGFfYdeMLJS3SRGa7up2ZVlR2f3cbNNhzS++YMkQWZikHqQimZmZfQxIbYnDM8ay7RuvGaTLQiZCPLIcs6Fufz4UHHJTZYRSRctUzZ2EZDs8YrunV0unv1aHW4X9vjaRVtYZRyyVVPXfuqZcno+6s3lLeN1G0Xhm7AZHYAf8aGh30flIFoXgIlcAS0bzV6upcL8n7zjrTuMhLexMUZ9FBikxMZcJgUa83tOQBspZwcpHwNkwNIX/6Jjf8RBivtqb6DZktMRM1D79fthKmf55H2ZO8FhNOn5OsqC9kIKm/PVlbEJs=
+script:
+  - docker build -t "$DOCKER_USER/lbscrape" .
+  - docker tag "$DOCKER_USER/lbscrape:latest" "$DOCKER_USER/lbscrape:$(echo $TRAVIS_COMMIT | cut -c-10)"
+  - docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+  - docker push "$DOCKER_USER/lbscrape"
+before_deploy:
+  - openssl aes-256-cbc -K $encrypted_eb687876b3f2_key -iv $encrypted_eb687876b3f2_iv -in deploy_key.enc -out /tmp/deploy_key -d
+  - eval "$(ssh-agent -s)"
+  - chmod 600 /tmp/deploy_key
+  - ssh-add /tmp/deploy_key
+deploy:
+ provider: script
+ skip_cleanup: true
+ script: ssh -o StrictHostKeyChecking=no admin@memcock.tk "./deploy.sh lbscrape $(echo $TRAVIS_COMMIT| cut -c-10)"
+ on:
+   branch: master
