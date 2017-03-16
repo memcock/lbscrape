@@ -59,6 +59,22 @@ def get_job(job_id):
 	job = models.Job.query.get(job_id)
 	return job
 
+def create_result_set(length):
+	rS = models.ResultSet(length)
+	if commit_record(rS):
+		return rS
+	return None
+
+def get_result_set(rsid):
+	rS = models.ResultSet.query.get(rsid)
+	return rS
+
+def add_results_to_result_set(rsid, results):
+	rS = get_result_set(rsid)
+	for result in results:
+		rS.results.append(result)
+	commit_record(result)
+
 def add_results_to_job(job, results):
 	if isinstance(job, int):
 		job = get_job(job)

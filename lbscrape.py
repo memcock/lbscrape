@@ -9,8 +9,8 @@ import lib.utils as utils
     
 app.api.add_resource(Subreddit, '/r/<subreddit>')
 app.api.add_resource(Check, '/check/<subreddit>')
-app.api.add_resource(Queue, '/queue/<job_id>')
-app.api.add_resource(Result, '/result/<job_id>')
+app.api.add_resource(Queue, '/queue/<rsid>')
+app.api.add_resource(Result, '/result/<rsid>')
 
 if __name__ == '__main__':
     app.celery.worker_main()

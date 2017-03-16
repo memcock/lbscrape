@@ -1,3 +1,3 @@
 from .image import Image
 from .subreddit import Subreddit
-from .job import Job
+from .job import Job, ResultSet

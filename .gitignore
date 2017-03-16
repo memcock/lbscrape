@@ -3,3 +3,7 @@ __pycache__
 .venv
 *.db
 design.txt
+deploy_key
+deploy_key.pub
+img_backup.json
+checked.json
