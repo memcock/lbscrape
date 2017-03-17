@@ -1,7 +1,6 @@
 import app
 db = app.db
-from lib.utils import date, check_url, convert_delta, utc_time
-from datetime import datetime
+from ..util import time, check_url 
 
 class Image(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -16,8 +15,17 @@ class Image(db.Model):
 		self.url = url
 		self.created = created
 		self.subreddit = subreddit
-		self.checked = datetime.utc_now()
+		self.checked = time.now()
 
+	def __repr__(self):
+		args = (
+			self.fullname,
+			self.subreddit,
+			self.created,
+			self.checked
+			)
+		return '<Image fullname: %s, sub: %s, created: %s, checked: %s>'
+		
 	@property
 	def as_dict(self):
 		return {
@@ -28,9 +36,9 @@ class Image(db.Model):
 		}
 
 	def check(self, threshold):
-		if convert_delta(threshold) < datetime.utcnow() - self.checked :
+		if time.convert_delta(threshold) < time.now() - self.checked :
 			if not check_url(self.url):
 				pass # delete the image here
 				# return False
-			self.checked = datetime.utcnow()
+			self.checked = time.now()
 		return True

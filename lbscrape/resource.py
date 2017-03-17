@@ -1,13 +1,10 @@
-from flask_restful import Resource, fields, marshal, abort
-from flask import jsonify, request
+from flask_restful import Resource, fields, marshal
+from flask import request
 # from lib.tasks import find_images
-import lib.utils as utils
-import lib.database as database
-from celery.result import AsyncResult
-import lib.reddit as reddit
-from flask_restful import reqparse
+from .util.db import decode_id
+from .database import Result, Image, Subreddit
+from .reddit import check as check_subreddit
 from config import getLogger
-import lib.models as models
 from .task import Scan
 _log = getLogger(__name__)
 
@@ -28,31 +25,33 @@ class Subreddit(Resource):
 		return marshal(rS, ResultSet_resource_fields, envelope='result'), 202
 
 	def load_images(self, subreddit, wanted, exclude):
-		images = database.get_images(subreddit, wanted, exclude)
+		images = Image.get(subreddit, wanted, exclude)
 		return images
 
 	def result_set(self, length, results = []):
-		return models.ResultSet(length, *results)
+		return Result.create(length, *results)
 
 class Queue(Resource):
 	"""
 		Queries for a Results object for job_id
 	"""
 	def get(self, rsid):
-		rS = database.get_result_set(utils.decode_id(rsid))
+		rS = Result.get(decode_id(rsid))
 		if not rS.complete:
 			return dict(result={'complete':False, 'progress':rS.progress}), 202
 		return dict(result={'complete':True, 'progress':rS.progress}), 303		
 
 class Result(Resource):
 	def get(self, rsid):
-		rS = database.get_result_set(utils.decode_id(rsid))
+		rS = Result.get(decode_id(rsid))
 		if rS.complete:
-			rS.mark()
+			rS.mark() # mark results with the configured expiry time
 			results = [result.as_dict for result in rS.results]
 			return dict(result={'links': results}), 200
 		return dict(result={'complete':False}), 412		
 
 class Check(Resource):
 	def get(self, subreddit):
-		return dict(valid = reddit.check(subreddit))
+		if not Subreddit.get(subreddit, create = False):
+			return dict(valid = check_subreddit(subreddit))
+		return dict(valid = True)

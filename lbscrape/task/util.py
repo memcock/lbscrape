@@ -1,8 +1,12 @@
 import app
 from celery import subtask, group, signature, chord
-from ..utils import check_url
+from ..util import check_url, recurse_list
 from .database import insert_images, add_to_result_set
 
+@app.celery.task
+def collapse_lists(lists):
+	return [ x for x in recurse_list(lists)]
+	
 @app.celery.task
 def dmap(it, callback):
     # Map a callback over an iterator and return as a group

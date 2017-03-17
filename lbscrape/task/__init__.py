@@ -1,6 +1,5 @@
 from .reddit import GetLinks, GetSegments
-from .util import to_chord, checkUrls, update_results_set
-from ..database import create_result_set
+from .util import to_chord, checkUrls, update_results_set, collapse_lists
  
 class Task:
 	def _execute(self, *args, **kwargs):
@@ -20,10 +19,19 @@ class Scan(Task):
 		self._rsid = rsid
 
 	def _buildTask(self, subreddit, wanted, rsid):
-		task = (GetSegments.s(subreddit) | GetLinks.s(subreddit) |
+		# task = (GetSegments.s(subreddit) | GetLinks.s(subreddit) |
+		# 		to_chord.s(
+		# 			checkUrls.s(),
+		# 			update_results_set.s(rsid, wanted)))
+				
+		task = (GetSegments.s(subreddit) |
 				to_chord.s(
-					checkUrls.s(),
+					GetLinks.s(subreddit),
+					collapse_lists.s()) |
+				to_chord.s(
+					checkUrl.s(),
 					update_results_set.s(rsid, wanted)))
+
 		return task
 
 	def _execute(self, subreddit, wanted, rsid):

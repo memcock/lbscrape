@@ -1,10 +1,10 @@
 import app 
 celery = app.celery
-from lib.resource import Subreddit, Queue, Result, Check
+from .resource import Subreddit, Queue, Result, Check
 from sqlalchemy.ext.declarative import declarative_base
-import lib.utils as utils
 
-# if not utils.is_sane_database(declarative_base(), app.db.session):
+# from .util.db import is_sane_database
+# if not is_sane_database(declarative_base(), app.db.session):
 #     app.db.create_all()
     
 app.api.add_resource(Subreddit, '/r/<subreddit>')
