@@ -1,4 +1,4 @@
-import app as app
+import lbscrape.app as app
 celery = app.celery
 from .resource import Subreddit, Queue, Result, Check
 from sqlalchemy.ext.declarative import declarative_base

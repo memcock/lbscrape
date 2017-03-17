@@ -1,7 +1,6 @@
-import app
-db = app.db
-from .util.db import encode_id
-from .util import time
+from ..app import db
+from ..util.db import encode_id
+from ..util import time
 
 results = db.Table('results',
 		db.Column('image_id', db.Integer, db.ForeignKey('image.id')),

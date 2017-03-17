@@ -1,11 +1,11 @@
 
-import app
+from ..app import db
 
 def commit_record(record):
 	try:
-		app.db.session.add(record)
-		app.db.session.commit()
+		db.session.add(record)
+		db.session.commit()
 	except IntegrityError:
-		app.db.session.rollback()
+		db.session.rollback()
 		return False
 	return True

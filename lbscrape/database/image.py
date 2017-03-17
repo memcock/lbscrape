@@ -1,6 +1,6 @@
 from ..models import Image as ImageModel
 from .func import commit_record
-from ..subreddit import Subreddit
+from .subreddit import Subreddit
 from ..util import time
 
 class Image:

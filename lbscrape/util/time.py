@@ -44,7 +44,7 @@ def max_delta(start, stop, delta):
 		return stop
 	return val
 
-def min_delta(start, stop, delta)
+def min_delta(start, stop, delta):
 	'''
 		decrements start by at most delta without passing stop
 		eg	start 10 stop 0 delta 5 -> 5

@@ -1,5 +1,5 @@
-import app
-db = app.db
+from ..app import db
+# db = app.db
 from ..util import time, check_url 
 
 class Image(db.Model):

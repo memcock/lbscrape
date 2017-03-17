@@ -1,4 +1,4 @@
-import app
+from ..app import celery
 from ..util import time
 from ..reddit import images, newest
 from ..database import Subreddit, commit_record
@@ -19,7 +19,7 @@ def old_posts(oScanned, created, limit):
 		return oScanned, stop
 	return None
 
-@app.celery.task
+@celery.task
 def GetSegments(subreddit, interval = '24h'):
 	sub = Subreddit.get(subreddit)
 	nPosted = newest(subreddit)
@@ -39,10 +39,10 @@ def GetSegments(subreddit, interval = '24h'):
 			segs.append(start.timestamp(), stope.timestamp())
 	for seg in segs:
 		print(seg) # TODO: convert to logging
-	return [x.timestamp(), y.timestamp() for x,y in seg]
+	return [(x.timestamp(), y.timestamp()) for x,y in seg]
 
 
-@app.celery.task
+@celery.task
 def GetLinks(start, stop, subreddit):
 	return [submission_to_dict(url) for url in images(subreddit, start, stop)]
 

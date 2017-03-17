@@ -1,5 +1,4 @@
-import app
-db = app.db
+from ..app import db
 
 class Subreddit(db.Model):
 	id = db.Column(db.Integer, primary_key= True)
