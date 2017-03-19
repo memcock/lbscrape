@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, timezone
 
 def now():
-	return datetime.utc_now()
+	return datetime.utcnow()
 	
 def convert_delta(interval):
 	'''

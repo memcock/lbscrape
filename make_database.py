@@ -3,7 +3,7 @@ import sys
 import socket
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
-from config import config, getLogger
+from lbscrape.config import config, getLogger
 import time
 
 _log = getLogger(__name__)
@@ -32,9 +32,9 @@ if __name__ == '__main__':
 			if not database_exists(engine.url):
 				_log.info('Database does not exist, creating...')
 				create_database(engine.url)
-				import app
-				from lib.models import *
-				app.db.create_all()
+				import lbscrape
+				from lbscrape.models import *
+				lbscrape.app.db.create_all()
 			else:
 				_log.info('Database already exists')
 			sys.exit(0)

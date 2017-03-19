@@ -1,6 +1,7 @@
 from ..app import db
 from ..util.db import encode_id
 from ..util import time
+from sqlalchemy.types import JSON
 
 results = db.Table('results',
 		db.Column('image_id', db.Integer, db.ForeignKey('image.id')),
@@ -10,12 +11,14 @@ class ResultSet(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	expires = db.Column(db.DateTime)
 	length = db.Column(db.Integer)
+	stuck = db.Column(db.Boolean, default = False)
+	_task = db.Column(JSON, default = {})
 	results = db.relationship('Image', secondary=results,
 				backref = 'result_sets')
 
 	def __init__(self, length, *args):
 		self.length = length
-		for args in args:
+		for arg in args:
 			self.results.append(arg)
 			
 	def __repr__(self):
@@ -40,4 +43,4 @@ class ResultSet(db.Model):
 		return encode_id(self.id)
 
 	def mark(self):
-		self.expires = time.now() + convert_delta('1h')
+		self.expires = time.now() + time.convert_delta('1h')

@@ -2,7 +2,7 @@ from flask_restful import Resource, fields, marshal
 from flask import request
 # from lib.tasks import find_images
 from .util.db import decode_id
-from .database import Result, Image, Subreddit
+from .database import Result, Image, Subreddit, commit_record
 ResultDB, ImageDB, SubredditDB = Result, Image, Subreddit
 from .reddit import check as check_subreddit
 from .config import getLogger
@@ -38,8 +38,25 @@ class Queue(Resource):
 	"""
 	def get(self, rsid):
 		rS = ResultDB.get(decode_id(rsid))
-		if not rS.complete:
+		_log.debug('Checking status for %s'%rsid)
+		if rS.stuck:
+			_log.debug('Found stuck result')
+			s = Scan._load(rS.id)
+			if s:
+				_log.debug('Starting new Scan')
+				s()
+				rS.stuck = False
+				commit_record(rS)
+			else:
+				_log.error('Error loading Scan')
+				rS.stuck = False
+				commit_record(rS)
 			return dict(result={'complete':False, 'progress':rS.progress}), 202
+		if not rS.complete:
+			_log.debug('Incomplete Results %s'%rsid)
+			return dict(result={'complete':False, 'progress':rS.progress}), 202
+	
+		_log.debug('Complete Results %s'%rsid)
 		return dict(result={'complete':True, 'progress':rS.progress}), 303		
 
 class Result(Resource):

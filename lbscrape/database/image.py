@@ -5,11 +5,11 @@ from ..util import time
 
 class Image:
 	@staticmethod
-	def get(rsid):
+	def get(imgid):
 		'''
 			Return a Image given its id or None
 		'''
-		return ImageModel.query.get(rsid)
+		return ImageModel.query.get(imgid)
 		
 	@staticmethod
 	def create(fullname = None, url = None, created = None, subreddit = None):
@@ -25,11 +25,11 @@ class Image:
 	@staticmethod
 	def build_exclusion_filter(query, exclude):
 		for x in exclude:
-			query = query.filter(Image.fullname != x)
+			query = query.filter(ImageModel.fullname != x)
 		return query
 
 	@staticmethod
 	def search(subreddit, limit = 10, exclude = []):
 		subreddit = Subreddit.get(subreddit)
-		query = ImageModel.build_exclusion_filter(sub.images, exclude)
+		query = Image.build_exclusion_filter(subreddit.images, exclude)
 		return query.limit(limit).all()

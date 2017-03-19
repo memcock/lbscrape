@@ -1,4 +1,4 @@
-
+from sqlalchemy.exc import IntegrityError
 from ..app import db
 
 def commit_record(record):
