@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
-from config import config, getLogger
+from .config import config, getLogger
 from celery import Celery
 
 _log = getLogger(__name__)
@@ -17,7 +17,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 api = Api(app)
 db = SQLAlchemy(app)
 
-celery = Celery('lib.tasks', broker = config.broker, backend = config.broker)
+celery = Celery('task', broker = config.broker, backend = config.broker)
 
 
 if __name__ == '__main__':

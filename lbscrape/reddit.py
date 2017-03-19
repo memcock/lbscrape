@@ -1,8 +1,8 @@
 from praw import Reddit
 from prawcore.exceptions import Forbidden, NotFound, Redirect
 import requests
-from config import config, getLogger
-import lib.utils as utils
+from .config import config, getLogger
+from .util import time
 
 _log = getLogger(__name__)
 
@@ -62,8 +62,8 @@ def details(subreddit):
 	'''
 	client = r(subreddit)
 	data = {
-		'created': utils.utc_time(client.created_utc),
-		'newest': utils.utc_time(newest(subreddit).created_utc)
+		'created': time.utc_time(client.created_utc),
+		'newest': time.utc_time(newest(subreddit).created_utc)
 	}
 	return data
 	
