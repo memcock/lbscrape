@@ -3,6 +3,9 @@ from ..util import time, db
 from ..reddit import images, newest
 from ..database import Subreddit, commit_record
 from prawcore.exceptions import PrawcoreException
+from ..config import config, getLogger
+
+_log = getLogger(__name__)
 
 def new_posts(nPosted, nScanned, limit):
 	if not nScanned:
@@ -21,7 +24,7 @@ def old_posts(oScanned, created, limit):
 	return None
 
 @celery.task
-def GetSegments(subreddit, interval = '24h'):
+def GetSegments(subreddit, interval = config.scan.block_size ):
 	sub = Subreddit.get(subreddit)
 	nPosted = time.utc_time(newest(subreddit).created_utc)
 	nScanned = sub.newest
@@ -36,7 +39,7 @@ def GetSegments(subreddit, interval = '24h'):
 	posts = [ p for p in [newPosts, oldPosts] if p]
 	segs = []
 	for st, sp in posts:
-		for start, stop in time.iter_by_delta(st, sp, time.convert_delta('12h')):
+		for start, stop in time.iter_by_delta(st, sp, time.convert_delta(config.scan.chunk_size)):
 			segs.append((start.timestamp(), stop.timestamp()))
 	for seg in segs:
 		print(seg) # TODO: convert to logging

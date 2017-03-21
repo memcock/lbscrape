@@ -14,4 +14,8 @@ database:
     password: false
     path: postgres/lbscrape
 
+scan:
+    block_size: 24h
+    chunk_size: 6h
+
 broker: redis://redis:6379/0

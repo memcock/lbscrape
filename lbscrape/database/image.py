@@ -1,4 +1,5 @@
 from ..models import Image as ImageModel
+from sqlalchemy.sql.expression import func
 from .func import commit_record
 from .subreddit import Subreddit
 from ..util import time
@@ -32,4 +33,4 @@ class Image:
 	def search(subreddit, limit = 10, exclude = []):
 		subreddit = Subreddit.get(subreddit)
 		query = Image.build_exclusion_filter(subreddit.images, exclude)
-		return query.limit(limit).all()
+		return query.order_by(func.random()).limit(limit).all()
