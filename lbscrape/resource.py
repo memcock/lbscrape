@@ -14,6 +14,10 @@ ResultSet_resource_fields = {
 	'complete': fields.Boolean
 }
 
+class Dummy200(Resource):
+	def get(self):
+		return {}, 200
+		
 class Subreddit(Resource):
 	def get(self, subreddit):
 		wanted = request.args.get('wanted', default = 10, type = int)
