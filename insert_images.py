@@ -2,7 +2,7 @@ from lbscrape.database import Image
 import json
 
 
-with open('checked.json') as f:
+with open('seed.json') as f:
 	images = json.load(f)
 
 for img in images:
