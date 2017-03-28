@@ -52,7 +52,10 @@ def newest(subreddit):
 		Get the newest submission from a subreddit
 	'''
 	client = r(subreddit)
-	return [post for post in client.new(limit=1)][0]
+	try:
+		return [post for post in client.new(limit=1)][0]
+	except IndexError:
+		return None
 
 def details(subreddit):
 	'''
